@@ -22,7 +22,7 @@ final class Serve_MD_Core {
 	private function init(): void {
 		add_filter( 'query_vars', [ $this, 'register_query_vars' ] );
 		add_filter( 'request', [ $this, 'resolve_md_url' ] );
-		add_action( 'template_redirect', [ $this, 'handle_markdown_request' ] );
+		add_action( 'template_redirect', [ $this, 'handle_markdown_request' ], 1 );
 		add_action( 'wp_head', [ $this, 'add_markdown_discovery_link' ] );
 
 		// Boot sub-components.
@@ -41,6 +41,8 @@ final class Serve_MD_Core {
 		if ( ! get_option( 'serve_md_settings' ) ) {
 			update_option( 'serve_md_settings', Serve_MD_Admin::default_settings() );
 		}
+
+		flush_rewrite_rules();
 	}
 
 	public static function deactivate(): void {
