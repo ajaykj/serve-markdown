@@ -1,0 +1,83 @@
+/* Serve Markdown — Admin Styles */
+
+.serve-md-wrap {
+	max-width: 960px;
+}
+
+.serve-md-tabs {
+	margin-bottom: 20px;
+}
+
+/* Stats grid */
+.serve-md-stats-grid {
+	display: flex;
+	gap: 16px;
+	margin: 20px 0;
+}
+
+.serve-md-stat-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px 28px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 140px;
+}
+
+.serve-md-stat-number {
+	font-size: 32px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: #1d2327;
+}
+
+.serve-md-stat-label {
+	font-size: 13px;
+	color: #646970;
+	margin-top: 4px;
+}
+
+/* Bot breakdown table */
+.serve-md-bot-table {
+	max-width: 500px;
+	margin-bottom: 24px;
+}
+
+/* Scrollable term lists for exclusions */
+.serve-md-scroll-list {
+	max-height: 200px;
+	overflow-y: auto;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 8px 12px;
+	background: #fff;
+}
+
+/* Log table tweaks */
+.serve-md-wrap .widefat td code {
+	font-size: 12px;
+}
+
+/* Responsive stats */
+@media screen and (max-width: 782px) {
+	.serve-md-stats-grid {
+		flex-direction: column;
+	}
+
+	.serve-md-stat-card {
+		flex-direction: row;
+		justify-content: space-between;
+		min-width: auto;
+	}
+
+	.serve-md-stat-number {
+		font-size: 24px;
+	}
+
+	.serve-md-stat-label {
+		margin-top: 0;
+		margin-left: 12px;
+	}
+}
