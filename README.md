@@ -2,7 +2,7 @@
 
 A WordPress plugin that serves clean Markdown versions of your content to AI agents and crawlers.
 
-![WordPress 6.5+](https://img.shields.io/badge/WordPress-6.5%2B-blue) ![PHP 8.0+](https://img.shields.io/badge/PHP-8.0%2B-777BB4) ![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green)
+![WordPress 6.5+](https://img.shields.io/badge/WordPress-6.5%2B-blue) ![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4) ![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green)
 
 ## Overview
 
@@ -36,7 +36,7 @@ Serve Markdown adds three access methods to your WordPress site so AI crawlers g
 ## Requirements
 
 - WordPress 6.5+
-- PHP 8.0+
+- PHP 8.1+
 
 ## Installation
 
