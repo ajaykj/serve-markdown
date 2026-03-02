@@ -50,7 +50,7 @@ final class Serve_MD_Logger {
 			KEY idx_bot (bot_name)
 		) {$charset};";
 
-		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	}
 
 	/**
@@ -59,7 +59,7 @@ final class Serve_MD_Logger {
 	public static function drop_log_table(): void {
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE;
-		$wpdb->query( "DROP TABLE IF EXISTS {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "DROP TABLE IF EXISTS {$table}" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	}
 
 	/**
@@ -76,12 +76,12 @@ final class Serve_MD_Logger {
 
 		global $wpdb;
 
-		$ua       = sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ?? '' );
+		$ua       = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? '' ) );
 		$bot_name = $this->detect_bot_name( $ua );
-		$url      = sanitize_url( $_SERVER['REQUEST_URI'] ?? '' );
+		$url      = sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
 		$ip       = $this->get_client_ip();
 
-		$wpdb->insert(
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			$wpdb->prefix . self::TABLE,
 			[
 				'post_id'    => $post_id,
@@ -146,14 +146,14 @@ final class Serve_MD_Logger {
 
 		$table = $wpdb->prefix . self::TABLE;
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore
+		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 		$today = (int) $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) FROM {$table} WHERE created_at >= %s", // phpcs:ignore
+			"SELECT COUNT(*) FROM {$table} WHERE created_at >= %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			current_time( 'Y-m-d' ) . ' 00:00:00'
 		) );
 
 		$bots = $wpdb->get_results(
-			"SELECT bot_name, COUNT(*) as cnt FROM {$table} GROUP BY bot_name ORDER BY cnt DESC", // phpcs:ignore
+			"SELECT bot_name, COUNT(*) as cnt FROM {$table} GROUP BY bot_name ORDER BY cnt DESC", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			ARRAY_A
 		);
 
@@ -169,7 +169,7 @@ final class Serve_MD_Logger {
 	 */
 	public function clear_log(): void {
 		global $wpdb;
-		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE ); // phpcs:ignore
+		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	}
 
 	/**
@@ -213,7 +213,7 @@ final class Serve_MD_Logger {
 	 * Get the client IP address.
 	 */
 	private function get_client_ip(): string {
-		$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
 		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
 	}
 
@@ -237,11 +237,11 @@ final class Serve_MD_Logger {
 
 		// Row count cap.
 		if ( $max_entries > 0 ) {
-			$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore
+			$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			if ( $count > $max_entries ) {
 				$excess = $count - $max_entries;
 				$wpdb->query( $wpdb->prepare(
-					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore
+					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 					$excess
 				) );
 			}
@@ -251,17 +251,17 @@ final class Serve_MD_Logger {
 		if ( $max_size_mb > 0 ) {
 			$max_bytes  = $max_size_mb * 1024 * 1024;
 			$data_bytes = (int) $wpdb->get_var( $wpdb->prepare(
-				"SELECT data_length FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", // phpcs:ignore
+				"SELECT data_length FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 				DB_NAME,
 				$table
 			) );
 
 			if ( $data_bytes > $max_bytes ) {
 				// Delete oldest 10% of rows and re-check once.
-				$count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore
+				$count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 				$delete = max( 1, (int) ceil( $count * 0.1 ) );
 				$wpdb->query( $wpdb->prepare(
-					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore
+					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 					$delete
 				) );
 			}
@@ -289,7 +289,7 @@ final class Serve_MD_Logger {
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE;
 		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$table} WHERE created_at < %s", // phpcs:ignore
+			"DELETE FROM {$table} WHERE created_at < %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 			gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) )
 		) );
 	}

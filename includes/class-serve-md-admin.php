@@ -160,7 +160,7 @@ final class Serve_MD_Admin {
 			return;
 		}
 
-		$tab      = sanitize_key( $_GET['tab'] ?? 'general' );
+		$tab      = sanitize_key( $_GET['tab'] ?? 'general' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only navigation tab selector
 		$settings = wp_parse_args( get_option( 'serve_md_settings', [] ), self::default_settings() );
 		?>
 		<div class="wrap serve-md-wrap">
@@ -395,12 +395,12 @@ final class Serve_MD_Admin {
 	private function render_log_tab( array $s ): void {
 		$logger = Serve_MD_Logger::instance();
 		$stats  = $logger->get_log_stats();
-		$page   = max( 1, absint( $_GET['paged'] ?? 1 ) );
-		$bot    = sanitize_text_field( $_GET['bot'] ?? '' );
+		$page   = max( 1, absint( $_GET['paged'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only pagination param
+		$bot    = sanitize_text_field( wp_unslash( $_GET['bot'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter param
 		$data   = $logger->get_log_entries( 30, $page, $bot );
 		$pages  = (int) ceil( $data->total / 30 );
 
-		if ( ! empty( $_GET['cleared'] ) ) {
+		if ( ! empty( $_GET['cleared'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only display flag
 			echo '<div class="notice notice-success is-dismissible"><p>Log cleared.</p></div>';
 		}
 		?>
@@ -536,12 +536,12 @@ final class Serve_MD_Admin {
 					<div class="tablenav-pages">
 						<?php
 						$base_url = add_query_arg( [ 'page' => $this->page_slug, 'tab' => 'log', 'bot' => $bot ], admin_url( 'options-general.php' ) );
-						echo paginate_links( [
+						echo wp_kses_post( paginate_links( [
 							'base'    => $base_url . '%_%',
 							'format'  => '&paged=%#%',
 							'current' => $page,
 							'total'   => $pages,
-						] );
+						] ) );
 						?>
 					</div>
 				</div>

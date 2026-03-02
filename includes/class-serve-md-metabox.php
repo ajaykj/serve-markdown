@@ -76,7 +76,7 @@ final class Serve_MD_Metabox {
 	 * Save the meta box value.
 	 */
 	public function save_meta( int $post_id, WP_Post $post ): void {
-		if ( ! isset( $_POST['serve_md_nonce'] ) || ! wp_verify_nonce( $_POST['serve_md_nonce'], 'serve_md_metabox' ) ) {
+		if ( ! isset( $_POST['serve_md_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['serve_md_nonce'] ), 'serve_md_metabox' ) ) {
 			return;
 		}
 

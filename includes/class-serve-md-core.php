@@ -68,7 +68,7 @@ final class Serve_MD_Core {
 			return $query_vars;
 		}
 
-		$path = $_SERVER['REQUEST_URI'] ?? '';
+		$path = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
 		$path = strtok( $path, '?' ); // Strip query string.
 
 		if ( ! str_ends_with( $path, '.md' ) ) {
@@ -136,14 +136,14 @@ final class Serve_MD_Core {
 		Serve_MD_Logger::instance()->log_request( $post->ID, $via_url ? 'url' : 'header' );
 
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-			define( 'DONOTCACHEPAGE', true );
+			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- External caching API constant
 		}
 
 		status_header( 200 );
 		header( 'Content-Type: text/markdown; charset=utf-8' );
 		header( 'X-Content-Type-Options: nosniff' );
 
-		echo $markdown;
+		echo $markdown; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Intentional: raw text/markdown output, escaping would corrupt content
 		exit;
 	}
 
@@ -262,7 +262,7 @@ final class Serve_MD_Core {
 	 * ----------------------------------------------------------------*/
 
 	private function accepts_markdown(): bool {
-		$accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+		$accept = wp_unslash( $_SERVER['HTTP_ACCEPT'] ?? '' );
 		if ( $accept === '' ) {
 			return false;
 		}
@@ -445,7 +445,7 @@ final class Serve_MD_Core {
 	 * ----------------------------------------------------------------*/
 
 	private function html_to_markdown( WP_Post $post ): string {
-		$html = apply_filters( 'the_content', $post->post_content );
+		$html = apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Calling WP core filter, not registering one
 		$html = trim( $html );
 
 		if ( empty( $html ) ) {
@@ -458,13 +458,13 @@ final class Serve_MD_Core {
 		$pre_blocks = [];
 		$md = preg_replace_callback( '/<pre[^>]*><code[^>]*>(.*?)<\/code><\/pre>/si', function ( $m ) use ( &$pre_blocks ) {
 			$key = '%%PREBLOCK_' . count( $pre_blocks ) . '%%';
-			$pre_blocks[ $key ] = "\n```\n" . html_entity_decode( strip_tags( $m[1] ), ENT_QUOTES, 'UTF-8' ) . "\n```\n";
+			$pre_blocks[ $key ] = "\n```\n" . html_entity_decode( wp_strip_all_tags( $m[1] ), ENT_QUOTES, 'UTF-8' ) . "\n```\n";
 			return $key;
 		}, $md );
 
 		$md = preg_replace_callback( '/<pre[^>]*>(.*?)<\/pre>/si', function ( $m ) use ( &$pre_blocks ) {
 			$key = '%%PREBLOCK_' . count( $pre_blocks ) . '%%';
-			$pre_blocks[ $key ] = "\n```\n" . html_entity_decode( strip_tags( $m[1] ), ENT_QUOTES, 'UTF-8' ) . "\n```\n";
+			$pre_blocks[ $key ] = "\n```\n" . html_entity_decode( wp_strip_all_tags( $m[1] ), ENT_QUOTES, 'UTF-8' ) . "\n```\n";
 			return $key;
 		}, $md );
 
@@ -496,7 +496,7 @@ final class Serve_MD_Core {
 
 		// Blockquotes.
 		$md = preg_replace_callback( '/<blockquote[^>]*>(.*?)<\/blockquote>/si', function ( $m ) {
-			$inner = strip_tags( $m[1] );
+			$inner = wp_strip_all_tags( $m[1] );
 			$lines = explode( "\n", trim( $inner ) );
 			return "\n" . implode( "\n", array_map( fn( $l ) => '> ' . trim( $l ), $lines ) ) . "\n";
 		}, $md );
@@ -525,7 +525,7 @@ final class Serve_MD_Core {
 		$md = preg_replace_callback( '/<table[^>]*>(.*?)<\/table>/si', [ $this, 'convert_html_table' ], $md );
 
 		// Strip remaining HTML.
-		$md = strip_tags( $md );
+		$md = wp_strip_all_tags( $md );
 
 		// Decode entities.
 		$md = html_entity_decode( $md, ENT_QUOTES, 'UTF-8' );
@@ -554,7 +554,7 @@ final class Serve_MD_Core {
 			$cells = [];
 			preg_match_all( '/<(?:td|th)[^>]*>(.*?)<\/(?:td|th)>/si', $tr, $td_matches );
 			foreach ( $td_matches[1] as $cell ) {
-				$cells[] = trim( strip_tags( $cell ) );
+				$cells[] = trim( wp_strip_all_tags( $cell ) );
 			}
 			$rows[] = $cells;
 		}
