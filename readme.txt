@@ -4,7 +4,7 @@ Tags: markdown, ai, crawlers, content-negotiation, seo
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 0.1-beta
+Stable tag: 1.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -179,6 +179,15 @@ Yes. The plugin uses `WPINC` for environment detection instead of `ABSPATH`, mak
 
 == Changelog ==
 
+= 1.0 =
+* WordPress.org Plugin Check compliance: all errors resolved.
+* Replaced `strip_tags()` with `wp_strip_all_tags()` throughout HTML-to-Markdown converter.
+* Added proper sanitization (`esc_url_raw`, `sanitize_text_field`) for server variables.
+* Replaced interpolated table names in SQL with `$wpdb->prepare()` using `%i` identifier placeholder.
+* Added `esc_sql()` escaping for table name in uninstall cleanup.
+* Added `wp_kses_post()` wrapper on paginated log output.
+* Added `sanitize_text_field()` to nonce verification in meta box save.
+
 = 0.1-beta =
 * Initial beta release.
 * Content negotiation, .md URL suffix, and Markdown auto-discovery.
@@ -202,6 +211,9 @@ Yes. The plugin uses `WPINC` for environment detection instead of `ABSPATH`, mak
 * WPINC-based environment detection for managed hosting compatibility.
 
 == Upgrade Notice ==
+
+= 1.0 =
+First stable release. WordPress.org Plugin Check compliant.
 
 = 0.1-beta =
 Initial beta release.

@@ -19,20 +19,6 @@ Serve Markdown adds three access methods to your WordPress site so AI crawlers g
 - **Crawler Log** — Identifies and logs AI bot requests with per-bot dashboard
 - **Admin Controls** — Toggle features, choose post types, exclude categories/tags, map custom fields
 
-## Screenshots
-
-**General Settings**
-![General Settings](assets/screenshots/sm-settings-general.jpg)
-
-**Frontmatter Settings**
-![Frontmatter Settings](assets/screenshots/sm-settings-frontmatter.jpg)
-
-**Exclusions**
-![Exclusions](assets/screenshots/sm-settings-exclusions.jpg)
-
-**Crawler Log Settings**
-![Crawler Log Settings](assets/screenshots/sm-settings-crawler-log-settings.jpg)
-
 ## Requirements
 
 - WordPress 6.5+
@@ -46,6 +32,10 @@ Serve Markdown adds three access methods to your WordPress site so AI crawlers g
 4. Test by appending `.md` to any published post URL
 
 ## Changelog
+
+### 1.0
+
+WordPress.org Plugin Check compliant. Security hardening: proper sanitization of server variables, `%i` identifier placeholder for SQL table names, `wp_strip_all_tags()` throughout HTML-to-Markdown converter.
 
 ### 0.1-beta
 

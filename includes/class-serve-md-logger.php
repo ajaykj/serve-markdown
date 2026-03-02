@@ -146,16 +146,17 @@ final class Serve_MD_Logger {
 
 		$table = $wpdb->prefix . self::TABLE;
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$today = (int) $wpdb->get_var( $wpdb->prepare(
-			"SELECT COUNT(*) FROM {$table} WHERE created_at >= %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$total = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$today = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			'SELECT COUNT(*) FROM %i WHERE created_at >= %s',
+			$table,
 			current_time( 'Y-m-d' ) . ' 00:00:00'
 		) );
 
-		$bots = $wpdb->get_results(
-			"SELECT bot_name, COUNT(*) as cnt FROM {$table} GROUP BY bot_name ORDER BY cnt DESC", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-			ARRAY_A
-		);
+		$bots = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			'SELECT bot_name, COUNT(*) as cnt FROM %i GROUP BY bot_name ORDER BY cnt DESC',
+			$table
+		), ARRAY_A );
 
 		return [
 			'total' => $total,
@@ -169,7 +170,7 @@ final class Serve_MD_Logger {
 	 */
 	public function clear_log(): void {
 		global $wpdb;
-		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	}
 
 	/**
@@ -237,11 +238,12 @@ final class Serve_MD_Logger {
 
 		// Row count cap.
 		if ( $max_entries > 0 ) {
-			$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( $count > $max_entries ) {
 				$excess = $count - $max_entries;
-				$wpdb->query( $wpdb->prepare(
-					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					'DELETE FROM %i ORDER BY created_at ASC LIMIT %d',
+					$table,
 					$excess
 				) );
 			}
@@ -250,18 +252,19 @@ final class Serve_MD_Logger {
 		// Table size cap.
 		if ( $max_size_mb > 0 ) {
 			$max_bytes  = $max_size_mb * 1024 * 1024;
-			$data_bytes = (int) $wpdb->get_var( $wpdb->prepare(
-				"SELECT data_length FROM information_schema.tables WHERE table_schema = %s AND table_name = %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+			$data_bytes = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				'SELECT data_length FROM information_schema.tables WHERE table_schema = %s AND table_name = %s',
 				DB_NAME,
 				$table
 			) );
 
 			if ( $data_bytes > $max_bytes ) {
 				// Delete oldest 10% of rows and re-check once.
-				$count  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$count  = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$delete = max( 1, (int) ceil( $count * 0.1 ) );
-				$wpdb->query( $wpdb->prepare(
-					"DELETE FROM {$table} ORDER BY created_at ASC LIMIT %d", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+				$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					'DELETE FROM %i ORDER BY created_at ASC LIMIT %d',
+					$table,
 					$delete
 				) );
 			}
@@ -288,8 +291,9 @@ final class Serve_MD_Logger {
 
 		global $wpdb;
 		$table = $wpdb->prefix . self::TABLE;
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$table} WHERE created_at < %s", // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			'DELETE FROM %i WHERE created_at < %s',
+			$table,
 			gmdate( 'Y-m-d H:i:s', strtotime( "-{$days} days" ) )
 		) );
 	}

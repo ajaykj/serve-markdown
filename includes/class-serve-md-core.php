@@ -68,7 +68,7 @@ final class Serve_MD_Core {
 			return $query_vars;
 		}
 
-		$path = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
+		$path = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
 		$path = strtok( $path, '?' ); // Strip query string.
 
 		if ( ! str_ends_with( $path, '.md' ) ) {
@@ -262,7 +262,7 @@ final class Serve_MD_Core {
 	 * ----------------------------------------------------------------*/
 
 	private function accepts_markdown(): bool {
-		$accept = wp_unslash( $_SERVER['HTTP_ACCEPT'] ?? '' );
+		$accept = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT'] ?? '' ) );
 		if ( $accept === '' ) {
 			return false;
 		}
