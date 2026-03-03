@@ -180,40 +180,9 @@ Yes. The plugin uses `WPINC` for environment detection instead of `ABSPATH`, mak
 == Changelog ==
 
 = 1.0 =
-* WordPress.org Plugin Check compliance: all errors resolved.
-* Replaced `strip_tags()` with `wp_strip_all_tags()` throughout HTML-to-Markdown converter.
-* Added proper sanitization (`esc_url_raw`, `sanitize_text_field`) for server variables.
-* Replaced interpolated table names in SQL with `$wpdb->prepare()` using `%i` identifier placeholder.
-* Added `esc_sql()` escaping for table name in uninstall cleanup.
-* Added `wp_kses_post()` wrapper on paginated log output.
-* Added `sanitize_text_field()` to nonce verification in meta box save.
-
-= 0.1-beta =
-* Initial beta release.
-* Content negotiation, .md URL suffix, and Markdown auto-discovery.
-* Admin settings panel with four tabs (General, Frontmatter, Exclusions, Crawler Log).
-* Configurable post type support for posts, pages, and custom post types.
-* Independent feature toggles for content negotiation, .md URLs, and auto-discovery.
-* Frontmatter field controls with per-field on/off toggles.
-* Custom static fields and post meta key mapping for frontmatter.
-* Category and tag exclusion rules.
-* Per-post opt-out via editor meta box.
-* Password-protected posts are blocked from Markdown serving and discovery.
-* .md URLs work with all permalink structures (post-name, date-based, numeric, pages) via url_to_postid().
-* RFC-compliant Accept header parsing (case-insensitive, rejects q=0, ignores partial media type matches).
-* Crawler request logging with automatic bot detection.
-* Stats dashboard with total, daily, and per-bot request counts.
-* Log filtering by bot name with pagination.
-* Configurable log retention with automatic pruning.
-* Max entries and max table size caps for crawler log.
-* Markdown preview from post list row actions and editor meta box.
-* HTML table to Markdown table conversion.
-* WPINC-based environment detection for managed hosting compatibility.
+* Initial release.
 
 == Upgrade Notice ==
 
 = 1.0 =
-First stable release. WordPress.org Plugin Check compliant.
-
-= 0.1-beta =
-Initial beta release.
+Initial release.

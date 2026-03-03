@@ -35,11 +35,7 @@ Serve Markdown adds three access methods to your WordPress site so AI crawlers g
 
 ### 1.0
 
-WordPress.org Plugin Check compliant. Security hardening: proper sanitization of server variables, `%i` identifier placeholder for SQL table names, `wp_strip_all_tags()` throughout HTML-to-Markdown converter.
-
-### 0.1-beta
-
-Initial release. Content negotiation, .md URLs, auto-discovery link tags, YAML frontmatter, crawler logging with bot identification, and full admin controls.
+Initial release.
 
 ## License
 
