@@ -4,6 +4,8 @@ A WordPress plugin that serves clean Markdown versions of your content to AI age
 
 ![WordPress 6.5+](https://img.shields.io/badge/WordPress-6.5%2B-blue) ![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%2B-777BB4) ![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-green)
 
+**[Download from WordPress.org](https://wordpress.org/plugins/serve-md/)**
+
 ## Overview
 
 AI agents from OpenAI, Anthropic, Google, Perplexity, and others are crawling the web constantly. They read your content not to index it for a search results page, but to understand it — so they can answer questions, summarize topics, and generate responses. These AI consumers don't care about your CSS or JavaScript. What they want is your content: clean, structured, and easy to parse.
