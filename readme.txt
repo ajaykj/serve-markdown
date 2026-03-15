@@ -174,8 +174,6 @@ Yes. The plugin uses `WPINC` for environment detection instead of `ABSPATH`, mak
 2. Frontmatter settings — control metadata fields and add custom fields.
 3. Exclusions — block categories, tags, or individual posts.
 4. Crawler log — see which AI bots are reading your content.
-5. Post editor meta box with disable toggle and preview button.
-6. "View Markdown" link in the post list.
 
 == Changelog ==
 
