@@ -12,60 +12,50 @@ Serve Markdown versions of your posts and pages to AI agents and crawlers. Conte
 
 == Description ==
 
-**AI agents and crawlers** from ChatGPT, Claude, Perplexity, Google AI, and others are now reading your content to generate answers. They don't need your CSS, JavaScript, or navigation — they need your content in a clean, structured format.
-
-Serve Markdown makes your WordPress site ready for these AI consumers by serving Markdown versions of your content — the format AI systems understand best.
-
-= The Problem =
-
-AI crawlers visit your site and parse through complex HTML, navigation menus, sidebars, footers, and JavaScript just to extract your actual content. Much of what makes your site look good to humans is noise to a machine. The result: AI systems may misinterpret, truncate, or ignore your content entirely.
-
-= The Solution =
-
-Serve Markdown gives AI agents a direct path to your content. When a crawler requests Markdown — either by sending an `Accept: text/markdown` header or by visiting a `.md` URL — your site responds with clean, well-structured Markdown complete with metadata. No noise, no guesswork.
+AI agents from ChatGPT, Claude, Perplexity, and others read your content to generate answers — but they parse through HTML, JavaScript, and navigation just to reach it. Serve Markdown gives them a direct path: clean Markdown with structured metadata. When a crawler requests it — via an `Accept: text/markdown` header or a `.md` URL — your site responds instantly. No noise, no guesswork.
 
 = How It Works =
 
 Serve Markdown adds three capabilities to your WordPress site:
 
 **1. Content Negotiation**
-When an AI crawler sends `Accept: text/markdown` in its HTTP headers, your site returns Markdown instead of HTML. This is the standard web mechanism for requesting alternative content formats — no URL changes needed.
+When an AI crawler sends `Accept: text/markdown`, your site returns Markdown instead of HTML — no URL changes needed.
 
 **2. .md URL Suffix**
-Append `.md` to any post or page URL to get the Markdown version. If your post lives at `example.com/my-article/`, the Markdown version is at `example.com/my-article.md`. Simple, predictable, bookmarkable.
+Append `.md` to any post or page URL (e.g. `example.com/my-article.md`) to get the Markdown version directly.
 
 **3. Markdown Auto-Discovery**
-Every page includes a `<link rel="alternate" type="text/markdown">` tag in the HTML head — similar to how RSS feeds are discovered. AI crawlers that look for alternative formats will find your Markdown automatically.
+Every page includes a `<link rel="alternate" type="text/markdown">` tag in the HTML head so crawlers can find your Markdown automatically.
 
 = What the Markdown Output Looks Like =
 
-Every Markdown response includes YAML frontmatter with structured metadata followed by your post content. Here is a real example from a live WordPress site running the plugin:
+Every Markdown response includes YAML frontmatter with structured metadata followed by your post content. Here is a real example:
 
-`---`
-`url: 'https://akumarjain.com/textexpander-year-in-review-2025/'`
-`title: TextExpander Year in Review 2025`
-`author:`
-`  name: Ajay`
-`  url: 'https://akumarjain.com/author/akumarjain/'`
-`date: '2026-01-05T09:05:00+05:30'`
-`modified: '2026-01-10T14:30:06+05:30'`
-`type: post`
-`categories:`
-`  - 2025`
-`  - Year in Review`
-`tags:`
-`  - '#ToolsIUse'`
-`  - Productivity`
-`  - Remote Work`
-`image: 'https://akumarjain.com/wp-content/uploads/text-expander-year-in-review-2025.webp'`
-`published: true`
-`---`
+<pre>
+---
+url: 'https://akumarjain.com/textexpander-year-in-review-2025/'
+title: TextExpander Year in Review 2025
+author:
+  name: Ajay
+  url: 'https://akumarjain.com/author/akumarjain/'
+date: '2026-01-05T09:05:00+05:30'
+modified: '2026-01-10T14:30:06+05:30'
+type: post
+categories:
+  - 2025
+  - Year in Review
+tags:
+  - '#ToolsIUse'
+  - Productivity
+  - Remote Work
+image: 'https://akumarjain.com/wp-content/uploads/text-expander-year-in-review-2025.webp'
+published: true
+---
 
-`# TextExpander Year in Review 2025`
+# TextExpander Year in Review 2025
 
-`In my daily work, I need to type the same words and phrases repeatedly...`
-
-You can see the full output at `https://akumarjain.com/textexpander-year-in-review-2025.md`. You control exactly which metadata fields appear, and you can add custom fields like a license URL or language code.
+In my daily work, I need to type the same words and phrases repeatedly...
+</pre>
 
 = Features =
 
@@ -106,16 +96,9 @@ You can see the full output at `https://akumarjain.com/textexpander-year-in-revi
 * "View Markdown" link in the Posts and Pages list table
 * Meta box shows on all enabled post types
 
-= Who Is This For? =
-
-* **Bloggers and publishers** who want their content accurately represented in AI-generated answers
-* **Content marketers** practicing Generative Engine Optimization (GEO) or Answer Engine Optimization (AEO)
-* **Site owners** who want to understand which AI bots are reading their content and how often
-* **Developers** building sites that serve structured content to both humans and machines
-
 = Performance =
 
-Serve Markdown has zero impact on your normal site performance. Markdown conversion only runs when specifically requested — your regular visitors see the same HTML pages they always have. The crawler log uses a lightweight custom database table with three independent safeguards against unbounded growth: time-based retention, a max row count cap, and a max table size cap.
+Markdown conversion only runs when specifically requested — regular visitors see the same HTML pages they always have. The crawler log uses a lightweight custom table with three safeguards against unbounded growth: time-based retention, a row count cap, and a table size cap.
 
 = Privacy =
 
@@ -138,7 +121,7 @@ The plugin works out of the box with sensible defaults: posts and pages are serv
 
 = Will this affect my site speed? =
 
-No. Markdown is generated on demand only when requested via the `.md` URL or `Accept: text/markdown` header. Normal page loads are completely unaffected.
+No. Markdown is generated on demand only when explicitly requested. Normal page loads are completely unaffected, and the crawler log insert adds negligible latency — or disable logging entirely from settings.
 
 = Does it work with custom post types? =
 
@@ -155,10 +138,6 @@ By default: URL, title, author name and URL, publish date, last modified date, p
 = What AI crawlers are detected? =
 
 ClaudeBot (Anthropic), GPTBot and OAI-SearchBot (OpenAI), ChatGPT-User, Google-Extended (Google AI), PerplexityBot, Bingbot, Cohere, Meta AI, Bytespider (ByteDance), Applebot, CCBot (Common Crawl), YouBot, and a catch-all for unrecognized bots.
-
-= Does the crawler log slow down Markdown responses? =
-
-The log insert is a single database write that adds negligible latency. If you prefer, logging can be disabled entirely from the Crawler Log settings tab.
 
 = Is this compatible with caching plugins? =
 
