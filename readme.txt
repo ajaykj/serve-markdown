@@ -123,7 +123,7 @@ The crawler log stores IP addresses and user-agent strings from Markdown request
 
 == Installation ==
 
-1. Upload the `serve-markdown` folder to `/wp-content/plugins/`.
+1. Upload the `serve-md` folder to `/wp-content/plugins/`.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Go to **Settings > Serve Markdown** to configure.
 4. Visit any published post URL with `.md` appended to verify it works.

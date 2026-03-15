@@ -10,6 +10,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires at least: 6.5
  * Requires PHP: 8.1
+ * Text Domain: serve-md
  */
 
 if ( ! defined( 'WPINC' ) ) {
